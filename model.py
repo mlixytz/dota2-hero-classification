@@ -12,6 +12,9 @@ from efficientnet_pytorch.model import EfficientNet
 from dataset import build_train_dataset, build_val_dataset
 
 
+global_step = 0
+
+
 class AverageMeter:
     def __init__(self, name, fmt=':f'):
         self.name = name
@@ -59,6 +62,8 @@ def save_checkpoint(state, is_best, checkpoint_dir, filename):
 
 
 def train(dataloader, model, criterion, optimizer, epoch, writer):
+    global global_step
+
     model.train()
 
     for i, (images, target) in enumerate(dataloader):
@@ -68,7 +73,8 @@ def train(dataloader, model, criterion, optimizer, epoch, writer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        writer.add_scalar('Loss/train', loss, i)
+        writer.add_scalar('Loss/train', loss, global_step)
+        global_step += 1
 
 
 def accuracy(output, target, topk=(1,)):
